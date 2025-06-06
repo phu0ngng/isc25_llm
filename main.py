@@ -48,7 +48,7 @@ def main():
     parser.add_argument(
         "--device-type",
         type=str,
-        choices=["cuda", "xpu", "hip", "cpu"],
+        choices=["cuda", "xpu", "rocm", "cpu"],
         default="cuda",
     )
     parser.add_argument(

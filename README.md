@@ -153,7 +153,7 @@ export HF_HOME=/path/to/huggingface/cache
 torchrun --nproc_per_node=8 main.py --benchmark speed --device-type cuda
 
 # For AMD GPUs
-python -m torch.distributed.launch --nproc_per_node=8 main.py --benchmark speed --device-type hip
+python -m torch.distributed.launch --nproc_per_node=8 main.py --benchmark speed --device-type rocm
 
 # For Intel GPUs
 python -m intel_extension_for_pytorch.cpu.launch --nproc_per_node=8 main.py --benchmark speed --device-type xpu
