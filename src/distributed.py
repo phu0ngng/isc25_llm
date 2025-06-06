@@ -9,9 +9,9 @@ class DistributedSetup:
     @staticmethod
     def setup_distributed(hw_config):
         """Initialize distributed training based on hardware type"""
-        if hw_config.device_type == "cpu":
+        if hw_config.device_type == ["cpu", "hip"]:
             backend = "gloo"  # CPU-based backend
-        elif hw_config.device_type in ["cuda", "rocm"]:
+        elif hw_config.device_type in ["cuda"]:
             backend = "nccl"  # GPU-optimized backend
         elif hw_config.device_type == "xpu":
             backend = "ccl"  # Intel-optimized backend
@@ -26,7 +26,7 @@ class DistributedSetup:
         """Get appropriate device based on hardware configuration"""
         if hw_config.device_type == "cpu":
             device = torch.device("cpu")
-        elif hw_config.device_type in ["cuda", "rocm", "xpu"]:
+        elif hw_config.device_type in ["cuda", "hip", "xpu"]:
             device = torch.device(f"{hw_config.device_type}:{local_rank}")
         else:
             raise Exception("Invalid device_type - {device_type}")

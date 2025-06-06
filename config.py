@@ -36,7 +36,7 @@ class CheckpointConfig:
 
 @dataclass
 class HardwareConfig:
-    # Device types: 'cuda' (NVIDIA), 'xpu' (Intel), 'rocm' (AMD), 'cpu'
+    # Device types: 'cuda' (NVIDIA), 'xpu' (Intel), 'hip' (AMD), 'cpu'
     device_type: str = None  # If None, will be auto-detected
     precision: str = "bf16"  # bf16, fp16, or fp32
     num_devices: int = None  # If None, will use all available devices
@@ -48,12 +48,12 @@ class HardwareConfig:
             elif hasattr(torch, "xpu") and torch.xpu.is_available():
                 self.device_type = "xpu"
             elif hasattr(torch, "rocm") and torch.rocm.is_available():
-                self.device_type = "rocm"
+                self.device_type = "hip"
             else:
                 self.device_type = "cpu"
 
         if self.num_devices is None:
-            if self.device_type == "cuda":
+            if self.device_type in ["cuda", "hip"]:
                 self.num_devices = torch.cuda.device_count()
             elif self.device_type == "xpu":
                 self.num_devices = torch.xpu.device_count()
