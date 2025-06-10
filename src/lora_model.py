@@ -74,9 +74,8 @@ class LoRAModel:
         model = PeftModel.from_pretrained(
             base_model,
             checkpoint_path,
-            is_trainable=False
+            is_trainable=True
         )
-        model = model.merge_and_unload()
 
         # Move model to appropriate device
         model = model.to(DistributedSetup.get_device(self.hw_config, local_rank))
