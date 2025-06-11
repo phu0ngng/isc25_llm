@@ -252,6 +252,17 @@ tar -czvf isc25_llm_team_name.tar.gz /path/to/isc25_llm
 - Profile code for bottlenecks
 - Test with smaller datasets first
 
+## Note for the competition
+- Please extract the given dataset and export the path as follows:
+```
+tar -xvf isc_dataset.tar.gz
+export DATA_DIR="./isc25_llm_task_dataset"
+```
+, then proceed as normal.
+
+- Please ensure that your submission does not contain the HuggingFace cache, 
+the original LLaMA model, input datasets, or any other unnecessary large metadata files,
+as including these will increase upload times to the server for our reevaluation.
 
 For questions or issues, please contact the competition organizers.
 Good luck, and may the best-optimized model win!

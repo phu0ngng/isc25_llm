@@ -2,6 +2,7 @@
 
 #export HF_TOKEN="hf_abcxyz"
 #export HF_HOME="/path/to/hf_cache"
+export DATA_DIR="./data"
 
 pip install -r requirements.txt
 

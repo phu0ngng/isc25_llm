@@ -74,7 +74,8 @@ def main():
     # Mask the sensitive token in the copy
     config_copy = copy.deepcopy(config)
     config_copy.cache.hf_token = "hf_secret_token"
-    logger.info("Training Configuration:\n%s", pformat(asdict(config_copy)))
+    if local_rank == 0:
+        logger.info("Training Configuration:\n%s", pformat(asdict(config_copy)))
 
     # Setup environment (all ranks need cache dirs, only rank 0 needs auth)
     setup_cache_dir(config, local_rank)
@@ -116,7 +117,7 @@ def main():
             dataset_name=config.speed_dataset,
             tokenizer=tokenizer,
             prompt_config=config.prompt,
-            split="all",
+            split="train",
             max_length=config.max_length,
         )
     else:
@@ -127,7 +128,7 @@ def main():
             dataset_name=config.accuracy_dataset,
             tokenizer=tokenizer,
             prompt_config=config.prompt,
-            split="test",
+            split="validation",
             max_length=config.max_length,
         )
     else:

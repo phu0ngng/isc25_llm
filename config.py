@@ -79,15 +79,15 @@ class LoRAConfig:
 @dataclass
 class TrainingConfig:
     model_name: str = "meta-llama/Llama-3.1-8B"
-    speed_dataset: str = "cosmos_qa"
-    accuracy_dataset: str = "lmms-lab/ScienceQA"
+    speed_dataset: str = "speed_dataset"
+    accuracy_dataset: str = "accuracy_dataset"
 
     precision: str = "bf16"
     batch_size: int = 8
     learning_rate: float = 2e-4
     num_epochs: int = 1
     gradient_accumulation_steps: int = 4
-    max_length = 512
+    max_length = 576
     max_steps = -1 # no explicit limit on the number of training steps
 
     checkpoint_freq: int = 1

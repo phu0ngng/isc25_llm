@@ -1,6 +1,8 @@
 # src/data/dataset.py
 from typing import Dict, List, Optional
 import logging
+import json
+import os
 
 import torch
 from datasets import load_dataset
@@ -10,6 +12,10 @@ from config import PromptConfig
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_data_dir():
+    return os.environ.get('DATA_DIR', default='data')
 
 
 class CausalLMMultipleChoiceDataset(Dataset):
@@ -34,7 +40,20 @@ class CausalLMMultipleChoiceDataset(Dataset):
         self.train = split != "validation"
 
         # Load dataset
-        if dataset_name == "lmms-lab/ScienceQA":
+        if dataset_name in ["speed_dataset", "accuracy_dataset"]:
+            data_dir = get_data_dir()
+            if not data_dir:
+                raise ValueError("data_dir must be provided")
+            logging.info(f"Loading dataset from directory {data_dir}, ignoring the split={split}")
+            data_path = os.path.join(data_dir, f"{dataset_name}.jsonl")
+            self.dataset = []
+            if not os.path.exists(data_path):
+                raise FileNotFoundError(f"Preprocessed data not found at {data_path}.")
+            with open(data_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    self.dataset.append(json.loads(line))
+            logging.info(f"Loaded {len(self.dataset)} samples from {data_path}")
+        elif dataset_name == "lmms-lab/ScienceQA":
             self.dataset = load_dataset(
                 dataset_name, "ScienceQA-FULL", split=split, trust_remote_code=True
             )
@@ -57,7 +76,13 @@ class CausalLMMultipleChoiceDataset(Dataset):
         self.max_prompt_length = max_length - self.max_answer_length
 
     def _format_prompt(self, example: Dict) -> str:
-        if self.dataset_name == "cosmos_qa":
+        if self.dataset_name in ["speed_dataset", "accuracy_dataset"]:
+            context = example["context"]
+            question = example["question"]
+            choices = example["options"]
+            label = example["answer"]
+
+        elif self.dataset_name == "cosmos_qa":
             context = example["context"]
             question = example["question"]
             choices = [
@@ -67,6 +92,7 @@ class CausalLMMultipleChoiceDataset(Dataset):
                 example["answer3"],
             ]
             label = example["label"]
+
         else:  # science_qa
             context = example.get("lecture", "")
             question = example["question"]
@@ -74,10 +100,10 @@ class CausalLMMultipleChoiceDataset(Dataset):
             label = example["answer"]
 
             if example.get("hint"):
-                context = f"{context}\nHint: {example['hint']}"
+                context = f"{context}\\nHint: {example['hint']}"
 
         # Format options
-        options_text = "\n".join(
+        options_text = "\\n".join(
             self.prompt_config.options_format.format(idx=i + 1, choice=choice)
             for i, choice in enumerate(choices)
         )
